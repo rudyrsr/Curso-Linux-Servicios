@@ -1,0 +1,50 @@
+1 creamos un ejecutable llamado /bin/ftp
+
+#!/bin/sh
+echo "Usuario del servidor Ftp"
+
+2 damos permisos a este archivo a+x al archivo ftp
+
+3 Añadimos como shell en el archivo /etc/shells
+
+/bin/ftp
+
+4 creamos 2 usuarios que esten en el grupo ftp 1 usu2 y usu1
+y utilice la shell /bin/ftp
+creando usuario 1
+adduser -g ftp -s /bin/shell usu1
+agregando password
+passwd usua1
+creando usuario 2
+adduser -g ftp -s /bin/shell usu2
+agregando password
+passwd usua2 
+ 
+5 incluimos una regla de selinux para indicarles al sistema
+ que el directorio de los usuarios pueda ser accesible a través del FTP:
+
+ setsebool -P allow_ftpd_full_access on
+
+6 configurar el archivo vsftpd.conf
+local_enable = YES : Para poder conectarse con los usuarios locales del servidor.
+
+user_config_dir=/etc/vsftpd/usuarios: Este parámetro nos permite personalizar los permisos para cada usuario. Haremos uso de esta directiva en el apartado 6 de este manual.
+
+chroot_local_user = YES 
+
+chroot_list_enable = YES 
+
+chroot_list_file = /etc/vsftpd/vsftpd.chroot_list
+
+allow_writeable_chroot=YES
+
+7 si queremos apagar el firewall utilizamos el comando
+
+systemctl stop firewalld
+
+8 para que puedan conectarse con clientes consola pasivo
+
+añadimos los siguientes tag
+
+connect_from_port_20=YES
+rsa_cert_file=/etc/ssl/private/vsftpd.pem
